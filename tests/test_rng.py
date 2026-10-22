@@ -35,7 +35,7 @@ def test_generator_is_not_random_random():
     assert not isinstance(rng, random.Random)
     source = inspect.getsource(inspect.getmodule(rng))
     assert "import random" not in source
-    assert "random.Random" not in source
+    assert "from random" not in source
 
 
 def test_bool_seed_is_rejected():
