@@ -8,11 +8,11 @@ the only place that parses arguments, and it uses argparse.
 from __future__ import annotations
 
 import argparse
-import sys
 
 from wardrum.commands import CommandQueue
 from wardrum.rng import SimRng
 from wardrum.runner import run
+from wardrum.scenario import load_scenario
 from wardrum.state import SimState
 
 
@@ -41,6 +41,11 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="print the final state hash as one hex line",
     )
+    parser.add_argument(
+        "--scenario",
+        default=None,
+        help="named starting field, such as skirmish_01 (default: empty map)",
+    )
     return parser
 
 
@@ -49,7 +54,13 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     if args.ticks < 0:
         parser.error("--ticks must be >= 0")
-    state = SimState()
+    if args.scenario is None:
+        state = SimState()
+    else:
+        try:
+            state = load_scenario(args.scenario)
+        except KeyError as exc:
+            parser.error(str(exc))
     digest = run(state, CommandQueue(), SimRng(args.seed), args.ticks)
     if args.hash_out:
         print(digest)
