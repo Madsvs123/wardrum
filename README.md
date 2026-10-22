@@ -25,6 +25,8 @@ py -3 -m wardrum --seed 42 --ticks 2000 --hash-out --scenario skirmish_01
 
 `--hash-out` prints one SHA-256 hex line. `--seed` defaults to 42 and `--ticks` defaults to 2000. Without `--scenario` the map is empty. `skirmish_01` places two units at fixed positions: `ranger` at (18, 12) facing east, and `warden` at (60, 12) facing west.
 
+`--debug` writes one line per resolved tick to stderr. It does not change the hash.
+
 ## Test
 
 ```text

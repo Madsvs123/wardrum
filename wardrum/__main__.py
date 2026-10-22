@@ -8,6 +8,7 @@ the only place that parses arguments, and it uses argparse.
 from __future__ import annotations
 
 import argparse
+import sys
 
 from wardrum.commands import CommandQueue
 from wardrum.rng import SimRng
@@ -46,6 +47,11 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="named starting field, such as skirmish_01 (default: empty map)",
     )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="write one trace line per resolved tick to stderr; does not change the hash",
+    )
     return parser
 
 
@@ -61,7 +67,14 @@ def main(argv: list[str] | None = None) -> int:
             state = load_scenario(args.scenario)
         except KeyError as exc:
             parser.error(str(exc))
-    digest = run(state, CommandQueue(), SimRng(args.seed), args.ticks)
+    digest = run(
+        state,
+        CommandQueue(),
+        SimRng(args.seed),
+        args.ticks,
+        debug=args.debug,
+        debug_sink=(lambda line: print(line, file=sys.stderr)) if args.debug else None,
+    )
     if args.hash_out:
         print(digest)
     return 0
